@@ -36,12 +36,12 @@
 
 @class CYRToken;
 
-@interface CYRTextStorage : NSTextStorage
+@interface CYRTextStorage: NSTextStorage
 
-@property (nonatomic, strong) NSArray <CYRToken *> *tokens;
-@property (nonatomic, strong) UIFont *defaultFont;
-@property (nonatomic, strong) UIColor *defaultTextColor;
+    @property (nonatomic, strong) NSArray <CYRToken*>* tokens;
+    @property (nonatomic, strong) UIFont *defaultFont;
+    @property (nonatomic, strong) UIColor *defaultTextColor;
 
-- (void)update;
+    - (void) update;
 
 @end

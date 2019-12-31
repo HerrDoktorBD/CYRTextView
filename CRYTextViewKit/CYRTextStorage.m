@@ -35,10 +35,10 @@
 #import "CYRTextStorage.h"
 #import "CYRToken.h"
 
-@interface CYRTextStorage ()
+@interface CYRTextStorage()
 
-@property (nonatomic, strong) NSMutableAttributedString *attributedString;
-@property (nonatomic, strong) NSMutableDictionary *regularExpressionCache;
+    @property (nonatomic, strong) NSMutableAttributedString *attributedString;
+    @property (nonatomic, strong) NSMutableDictionary *regularExpressionCache;
 
 @end
 
@@ -46,12 +46,11 @@
 
 #pragma mark - Initialization & Setup
 
-- (id)init
-{
-    if (self = [super init])
-    {
-        _defaultFont = [UIFont systemFontOfSize:12.0f];
-        _defaultTextColor = [UIColor blackColor];
+- (id) init {
+    if (self = [super init]) {
+
+        _defaultFont = [UIFont systemFontOfSize: 12.0f];
+        _defaultTextColor = [UIColor redColor];
         _attributedString = [NSMutableAttributedString new];
         
         _tokens = @[];
@@ -61,16 +60,15 @@
     return self;
 }
 
-
 #pragma mark - Overrides
 
-- (void)setTokens:(NSMutableArray *)tokens
-{
+- (void) setTokens: (NSMutableArray*) tokens {
+
     _tokens = tokens;
     
     // Clear the regular expression cache
     [self.regularExpressionCache removeAllObjects];
-    
+
     // Redraw all text
     [self update];
 }
@@ -118,57 +116,57 @@
     [self applyStylesToRange:extendedRange];
 }
 
+- (void) update {
 
--(void)update
-{
     NSRange range = NSMakeRange(0, self.length);
 
-    NSDictionary *attributes =
+    NSDictionary* attributes =
     @{
-      NSFontAttributeName : self.defaultFont,
-      NSForegroundColorAttributeName : self.defaultTextColor
-     };
-    [self addAttributes:attributes range:range];
+        NSFontAttributeName : self.defaultFont,
+        NSForegroundColorAttributeName : self.defaultTextColor
+    };
+    [self addAttributes: attributes
+                  range: range];
 
-    [self applyStylesToRange:range];
+    [self applyStylesToRange: range];
 }
 
-- (void)applyStylesToRange:(NSRange)searchRange
-{
-    if (self.editedRange.location == NSNotFound)
-    {
+- (void) applyStylesToRange: (NSRange) searchRange {
+
+    if (self.editedRange.location == NSNotFound) {
         return;
     }
-    
-    NSRange paragaphRange = [self.string paragraphRangeForRange: self.editedRange];
+
+    NSRange paragraphRange = [self.string paragraphRangeForRange: self.editedRange];
 
     // Reset the text attributes
-    NSDictionary *attributes =
+    NSDictionary* attributes =
     @{
-      NSFontAttributeName : self.defaultFont,
-      NSForegroundColorAttributeName : self.defaultTextColor
-     };
-    [self setAttributes:attributes range:paragaphRange];
-    
-    for (CYRToken *attribute in self.tokens)
-    {
+        NSFontAttributeName : self.defaultFont,
+        NSForegroundColorAttributeName : self.defaultTextColor
+    };
+    [self setAttributes:attributes range:paragraphRange];
+
+    for (CYRToken *attribute in self.tokens) {
+
         NSRegularExpression *regex = [self expressionForDefinition:attribute.name];
-        
-        [regex enumerateMatchesInString:self.string options:0 range:paragaphRange
+
+        [regex enumerateMatchesInString:self.string options:0 range:paragraphRange
                              usingBlock:^(NSTextCheckingResult *result, NSMatchingFlags flags, BOOL *stop) {
                                  
-                                 [attribute.attributes enumerateKeysAndObjectsUsingBlock:^(NSString *attributeName, id attributeValue, BOOL *stop) {
-                                     [self addAttribute:attributeName value:attributeValue range:result.range];
-                                 }];
-                             }];
+             [attribute.attributes enumerateKeysAndObjectsUsingBlock:^(NSString *attributeName, id attributeValue, BOOL *stop) {
+                 [self addAttribute:attributeName value:attributeValue range:result.range];
+             }];
+        }];
     }
 }
 
 - (NSRegularExpression *)expressionForDefinition:(NSString *)definition
 {
     __block CYRToken *attribute = nil;
-    
+
     [self.tokens enumerateObjectsUsingBlock:^(CYRToken *enumeratedAttribute, NSUInteger idx, BOOL *stop) {
+
         if ([enumeratedAttribute.name isEqualToString:definition])
         {
             attribute = enumeratedAttribute;
@@ -177,9 +175,9 @@
     }];
     
     NSRegularExpression *expression = self.regularExpressionCache[attribute.expression];
-    
-    if (!expression)
-    {
+
+    if (!expression) {
+
         expression = [NSRegularExpression regularExpressionWithPattern:attribute.expression
                                                                options:NSRegularExpressionCaseInsensitive error:nil];
         

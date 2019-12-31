@@ -43,10 +43,10 @@
 static void *CYRTextViewContext = &CYRTextViewContext;
 static const float kCursorVelocity = 1.0f/8.0f;
 
-@interface CYRTextView ()
+@interface CYRTextView()
 
-@property (nonatomic, strong) CYRLayoutManager *lineNumberLayoutManager;
-@property (nonatomic, strong) CYRTextStorage *syntaxTextStorage;
+    @property (nonatomic, strong) CYRLayoutManager *lineNumberLayoutManager;
+    @property (nonatomic, strong) CYRTextStorage *syntaxTextStorage;
 
 @end
 
@@ -57,8 +57,8 @@ static const float kCursorVelocity = 1.0f/8.0f;
 
 #pragma mark - Initialization & Setup
 
-- (id)initWithFrame:(CGRect)frame
-{
+- (id) initWithFrame: (CGRect) frame {
+
     CYRTextStorage *textStorage = [CYRTextStorage new];
     CYRLayoutManager *layoutManager = [CYRLayoutManager new];
     
@@ -69,10 +69,10 @@ static const float kCursorVelocity = 1.0f/8.0f;
     //  Wrap text to the text view's frame
     textContainer.widthTracksTextView = YES;
     
-    [layoutManager addTextContainer:textContainer];
+    [layoutManager addTextContainer: textContainer];
 
-    [textStorage removeLayoutManager:textStorage.layoutManagers.firstObject];
-    [textStorage addLayoutManager:layoutManager];
+    [textStorage removeLayoutManager: textStorage.layoutManagers.firstObject];
+    [textStorage addLayoutManager: layoutManager];
     
     self.syntaxTextStorage = textStorage;
     
@@ -86,8 +86,8 @@ static const float kCursorVelocity = 1.0f/8.0f;
     return self;
 }
 
-- (void)_commonSetup
-{
+- (void) _commonSetup {
+
     // Setup observers
     [self addObserver:self forKeyPath:NSStringFromSelector(@selector(font)) options:NSKeyValueObservingOptionNew context:CYRTextViewContext];
     [self addObserver:self forKeyPath:NSStringFromSelector(@selector(textColor)) options:NSKeyValueObservingOptionNew context:CYRTextViewContext];
@@ -95,15 +95,17 @@ static const float kCursorVelocity = 1.0f/8.0f;
     [self addObserver:self forKeyPath:NSStringFromSelector(@selector(selectedRange)) options:NSKeyValueObservingOptionNew context:CYRTextViewContext];
 
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(handleTextViewDidChangeNotification:) name:UITextViewTextDidChangeNotification object:self];
-    
+
     // Setup defaults
     self.font = [UIFont systemFontOfSize:16.0f];
-    self.textColor = [UIColor blackColor];
+    self.textColor = [UIColor labelColor];
+
     self.autocapitalizationType = UITextAutocapitalizationTypeNone;
     self.autocorrectionType     = UITextAutocorrectionTypeNo;
     self.lineCursorEnabled = YES;
-    self.gutterBackgroundColor = [UIColor colorWithWhite:0.95 alpha:1];
-    self.gutterLineColor       = [UIColor lightGrayColor];
+
+    self.gutterBackgroundColor = [UIColor systemGray5Color];
+    self.gutterLineColor = [UIColor systemGray3Color];
     
     // Inset the content to make room for line numbers
     self.textContainerInset = UIEdgeInsetsMake(8, self.lineNumberLayoutManager.gutterWidth, 8, 0);
@@ -118,22 +120,23 @@ static const float kCursorVelocity = 1.0f/8.0f;
     [self addGestureRecognizer:_doubleFingerPanRecognizer];
 }
 
-
 #pragma mark - Cleanup
 
-- (void)dealloc
-{
+- (void) dealloc {
+
     [self removeObserver:self forKeyPath:NSStringFromSelector(@selector(font))];
     [self removeObserver:self forKeyPath:NSStringFromSelector(@selector(textColor))];
     [self removeObserver:self forKeyPath:NSStringFromSelector(@selector(selectedTextRange))];
     [self removeObserver:self forKeyPath:NSStringFromSelector(@selector(selectedRange))];
 }
 
-
 #pragma mark - KVO
 
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
-{
+- (void) observeValueForKeyPath: (NSString*) keyPath
+                       ofObject: (id) object
+                         change: (NSDictionary*) change
+                        context: (void*) context {
+
     if ([keyPath isEqualToString:NSStringFromSelector(@selector(font))] && context == CYRTextViewContext)
     {
         // Whenever the UITextView font is changed we want to keep a reference in the stickyFont ivar. We do this to counteract a bug where the underlying font can be changed without notice and cause undesired behaviour.
@@ -148,28 +151,27 @@ static const float kCursorVelocity = 1.0f/8.0f;
     {
         [self setNeedsDisplay];
     }
-    else
-    {
+    else {
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
     }
 }
 
-
 #pragma mark - Notifications
 
-- (void)handleTextViewDidChangeNotification:(NSNotification *)notification
-{
-    if (notification.object == self)
-    {
+- (void) handleTextViewDidChangeNotification: (NSNotification*) notification {
+
+    if (notification.object == self) {
+
         CGRect line = [self caretRectForPosition: self.selectedTextRange.start];
         CGFloat overflow = line.origin.y + line.size.height - ( self.contentOffset.y + self.bounds.size.height - self.contentInset.bottom - self.contentInset.top );
         
-        if ( overflow > 0 )
-        {
+        if (overflow > 0) {
+
             // We are at the bottom of the visible text and introduced a line feed, scroll down (iOS 7 does not do it)
             // Scroll caret to visible area
             CGPoint offset = self.contentOffset;
             offset.y += overflow + 7; // leave 7 pixels margin
+
             // Cannot animate with setContentOffset:animated: or caret will not appear
 //            [UIView animateWithDuration:.2 animations:^{
 //                [self setContentOffset:offset];
@@ -178,33 +180,33 @@ static const float kCursorVelocity = 1.0f/8.0f;
     }
 }
 
-
 #pragma mark - Overrides
 
-- (void)setTokens:(NSMutableArray *)tokens
-{
-    [self.syntaxTextStorage setTokens:tokens];
+- (void) setTokens: (NSMutableArray*) tokens {
+
+    [self.syntaxTextStorage setTokens: tokens];
 }
 
-- (NSArray *)tokens
-{
-    CYRTextStorage *syntaxTextStorage = (CYRTextStorage *)self.textStorage;
-    
+- (NSArray*) tokens {
+
+    CYRTextStorage *syntaxTextStorage = (CYRTextStorage*) self.textStorage;
+
     return syntaxTextStorage.tokens;
 }
 
-- (void)setText:(NSString *)text
-{
-    UITextRange *textRange = [self textRangeFromPosition:self.beginningOfDocument toPosition:self.endOfDocument];
-    [self replaceRange:textRange withText:text];
-}
+- (void) setText: (NSString*) text {
 
+    UITextRange* textRange = [self textRangeFromPosition: self.beginningOfDocument
+                                              toPosition: self.endOfDocument];
+    [self replaceRange: textRange
+              withText: text];
+}
 
 #pragma mark - Line Drawing
 
 // Original implementation sourced from: https://github.com/alldritt/TextKit_LineNumbers
-- (void)drawRect:(CGRect)rect
-{
+- (void) drawRect: (CGRect) rect {
+
     //  Drag the line number gutter background.  The line numbers them selves are drawn by LineNumberLayoutManager.
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGRect bounds = self.bounds;
@@ -232,7 +234,6 @@ static const float kCursorVelocity = 1.0f/8.0f;
     [super drawRect:rect];
 }
 
-
 #pragma mark - Gestures
 
 // Sourced from: https://github.com/srijs/NLTextView
@@ -246,11 +247,10 @@ static const float kCursorVelocity = 1.0f/8.0f;
     }
     
     return YES;
-    
 }
 
 // Sourced from: https://github.com/srijs/NLTextView
-- (void)singleFingerPanHappend:(UIPanGestureRecognizer *)sender
+- (void) singleFingerPanHappend:(UIPanGestureRecognizer *)sender
 {
     if (sender.state == UIGestureRecognizerStateBegan)
     {
@@ -263,7 +263,7 @@ static const float kCursorVelocity = 1.0f/8.0f;
 }
 
 // Sourced from: https://github.com/srijs/NLTextView
-- (void)doubleFingerPanHappend:(UIPanGestureRecognizer *)sender
+- (void) doubleFingerPanHappend:(UIPanGestureRecognizer *)sender
 {
     if (sender.state == UIGestureRecognizerStateBegan)
     {

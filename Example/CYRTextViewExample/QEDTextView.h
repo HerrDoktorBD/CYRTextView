@@ -8,11 +8,11 @@
 
 @import CYRTextViewKit;
 
-@interface QEDTextView : CYRTextView
+@interface QEDTextView: CYRTextView
 
-@property (nonatomic, strong) UIFont *defaultFont;
-@property (nonatomic, strong) UIFont *boldFont;
-@property (nonatomic, strong) UIFont *italicFont;
+    @property (nonatomic, strong) UIFont *defaultFont;
+    @property (nonatomic, strong) UIFont *boldFont;
+    @property (nonatomic, strong) UIFont *italicFont;
 
 @end
 

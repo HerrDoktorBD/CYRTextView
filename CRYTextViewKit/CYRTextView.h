@@ -40,15 +40,15 @@
 
 @class CYRToken;
 
-@interface CYRTextView : UITextView
+@interface CYRTextView: UITextView
 
-@property (nonatomic, strong) NSArray <CYRToken *> *tokens;
-@property (nonatomic, strong) UIPanGestureRecognizer *singleFingerPanRecognizer;
-@property (nonatomic, strong) UIPanGestureRecognizer *doubleFingerPanRecognizer;
+    @property (nonatomic, strong) NSArray <CYRToken *> *tokens;
+    @property (nonatomic, strong) UIPanGestureRecognizer *singleFingerPanRecognizer;
+    @property (nonatomic, strong) UIPanGestureRecognizer *doubleFingerPanRecognizer;
 
-@property UIColor *gutterBackgroundColor;
-@property UIColor *gutterLineColor;
+    @property UIColor *gutterBackgroundColor;
+    @property UIColor *gutterLineColor;
 
-@property (nonatomic, assign) BOOL lineCursorEnabled;
+    @property (nonatomic, assign) BOOL lineCursorEnabled;
 
 @end
